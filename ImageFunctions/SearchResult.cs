@@ -29,47 +29,6 @@ namespace ImageFunctions
 {
     public static class SearchResult
     {
-        private static readonly string BLOB_STORAGE_CONNECTION_STRING = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-
-        private static string GetBlobNameFromUrl(string bloblUrl)
-        {
-            var uri = new Uri(bloblUrl);
-            var blobClient = new BlobClient(uri);
-            return blobClient.Name;
-        }
-
-        private static IImageEncoder GetEncoder(string extension)
-        {
-            IImageEncoder encoder = null;
-
-            extension = extension.Replace(".", "");
-
-            var isSupported = Regex.IsMatch(extension, "gif|png|jpe?g", RegexOptions.IgnoreCase);
-
-            if (isSupported)
-            {
-                switch (extension.ToLower())
-                {
-                    case "png":
-                        encoder = new PngEncoder();
-                        break;
-                    case "jpg":
-                        encoder = new JpegEncoder();
-                        break;
-                    case "jpeg":
-                        encoder = new JpegEncoder();
-                        break;
-                    case "gif":
-                        encoder = new GifEncoder();
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return encoder;
-        }
-
         [FunctionName("SearchResult")]
         public static async Task Run(
             [EventGridTrigger]EventGridEvent eventGridEvent,
@@ -78,43 +37,15 @@ namespace ImageFunctions
         {
             try
             {
-                if (input != null)
-                {
-                    var createdEvent = ((JObject)eventGridEvent.Data).ToObject<StorageBlobCreatedEventData>();
-                    var extension = Path.GetExtension(createdEvent.Url);
-                    var encoder = GetEncoder(extension);
+                var functions = new Functions(Convert.ToInt32(Environment.GetEnvironmentVariable("SEARCH_RESULT_WIDTH")), Environment.GetEnvironmentVariable("SEARCH_RESULT_CONTAINER_NAME"));
 
-                    if (encoder != null)
-                    {
-                        var searchResultWidth = Convert.ToInt32(Environment.GetEnvironmentVariable("SEARCH_RESULT_WIDTH"));
-                        var searchResultContainerName = Environment.GetEnvironmentVariable("SEARCH_RESULT_CONTAINER_NAME");
-                        var blobServiceClient = new BlobServiceClient(BLOB_STORAGE_CONNECTION_STRING);
-                        var blobContainerClient = blobServiceClient.GetBlobContainerClient(searchResultContainerName);
-                        var blobName = GetBlobNameFromUrl(createdEvent.Url);
-
-                        using (var output = new MemoryStream())
-                        using (Image<Rgba32> image = Image.Load(input))
-                        {
-                            var divisor = image.Width / searchResultWidth;
-                            var height = Convert.ToInt32(Math.Round((decimal)(image.Height / divisor)));
-
-                            image.Mutate(x => x.Resize(searchResultWidth, height));
-                            image.Save(output, encoder);
-                            output.Position = 0;
-                            await blobContainerClient.UploadBlobAsync(blobName, output);
-                        }
-                    }
-                    else
-                    {
-                        log.LogInformation($"No encoder support for: {createdEvent.Url}");
-                    }
-                }
+                await functions.ResizeImage(eventGridEvent, input, log);
             }
             catch (Exception ex)
             {
                 log.LogInformation(ex.Message);
                 throw;
             }
-        }
+}
     }
 }
