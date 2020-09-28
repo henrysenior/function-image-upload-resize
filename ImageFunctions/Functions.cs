@@ -83,6 +83,7 @@ namespace ImageFunctions
                     if (encoder != null)
                     {
                         var searchResultContainerName = Environment.GetEnvironmentVariable(_containerName);
+                        log.LogInformation($"Debug information: {searchResultContainerName}");
                         var blobServiceClient = new BlobServiceClient(BLOB_STORAGE_CONNECTION_STRING);
                         var blobContainerClient = blobServiceClient.GetBlobContainerClient(searchResultContainerName);
                         var blobName = GetBlobNameFromUrl(createdEvent.Url);
