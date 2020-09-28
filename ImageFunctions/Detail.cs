@@ -28,7 +28,7 @@ namespace ImageFunctions
         {
             try
             {
-                var functions = new Functions(Convert.ToInt32(Environment.GetEnvironmentVariable("DETAIL_WIDTH")), Environment.GetEnvironmentVariable("DETAIL_CONTAINER_NAME"));
+                var functions = new Functions(Convert.ToInt32(Environment.GetEnvironmentVariable("DETAILS_WIDTH")), Environment.GetEnvironmentVariable("DETAILS_CONTAINER_NAME"));
 
                 await functions.ResizeImage(eventGridEvent, input, log);
             }

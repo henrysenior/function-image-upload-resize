@@ -7,8 +7,8 @@
     "THUMBNAIL_WIDTH": "100",
     "SEARCH_RESULT_CONTAINER_NAME": "searchresults",
     "SEARCH_RESULT_WIDTH": 400,
-    "DETAIL_CONTAINER_NAME": "details",
-    "DETAIL_WIDTH": "700",
+    "DETAILS_CONTAINER_NAME": "details",
+    "DETAILS_WIDTH": "700",
     "datatype": "binary"
   }
 }
