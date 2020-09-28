@@ -37,7 +37,12 @@ namespace ImageFunctions
         {
             try
             {
-                var functions = new Functions(Convert.ToInt32(Environment.GetEnvironmentVariable("THUMBNAIL_WIDTH")), Environment.GetEnvironmentVariable("THUMBNAIL_CONTAINER_NAME"));
+                var width = Convert.ToInt32(Environment.GetEnvironmentVariable("THUMBNAIL_WIDTH"));
+                var containerName = Environment.GetEnvironmentVariable("THUMBNAIL_CONTAINER_NAME");
+
+                log.LogInformation("More debug information: {width} | {containerName}");
+
+                var functions = new Functions(width, containerName);
 
                 await functions.ResizeImage(eventGridEvent, input, log);
             }
@@ -46,6 +51,6 @@ namespace ImageFunctions
                 log.LogInformation(ex.Message);
                 throw;
             }
-}
+        }
     }
 }
