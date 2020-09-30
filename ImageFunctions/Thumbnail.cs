@@ -40,15 +40,13 @@ namespace ImageFunctions
                 var width = Convert.ToInt32(Environment.GetEnvironmentVariable("THUMBNAIL_WIDTH"));
                 var containerName = Environment.GetEnvironmentVariable("THUMBNAIL_CONTAINER_NAME");
 
-                log.LogInformation($"More debug information: {width} | {containerName}");
-
                 var functions = new Functions(width, containerName);
 
                 await functions.ResizeImage(eventGridEvent, input, log);
             }
             catch (Exception ex)
             {
-                log.LogInformation(ex.Message);
+                log.LogError(ex.Message);
                 throw;
             }
         }

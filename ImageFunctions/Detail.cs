@@ -28,13 +28,16 @@ namespace ImageFunctions
         {
             try
             {
-                var functions = new Functions(Convert.ToInt32(Environment.GetEnvironmentVariable("DETAILS_WIDTH")), Environment.GetEnvironmentVariable("DETAILS_CONTAINER_NAME"));
+                var width = Convert.ToInt32(Environment.GetEnvironmentVariable("DETAILS_WIDTH"));
+                var containerName = Environment.GetEnvironmentVariable("DETAILS_CONTAINER_NAME");
+
+                var functions = new Functions(width, containerName);
 
                 await functions.ResizeImage(eventGridEvent, input, log);
             }
             catch (Exception ex)
             {
-                log.LogInformation(ex.Message);
+                log.LogError(ex.Message);
                 throw;
             }
         }

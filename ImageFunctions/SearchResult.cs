@@ -1,12 +1,3 @@
-// Default URL for triggering event grid function in the local environment.
-// http://localhost:7071/runtime/webhooks/EventGrid?functionName={functionname}
-
-// Learn how to locally debug an Event Grid-triggered function:
-//    https://aka.ms/AA30pjh
-
-// Use for local testing:
-//   https://{ID}.ngrok.io/runtime/webhooks/EventGrid?functionName=SearchResult
-
 using Azure.Storage.Blobs;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
@@ -37,13 +28,16 @@ namespace ImageFunctions
         {
             try
             {
-                var functions = new Functions(Convert.ToInt32(Environment.GetEnvironmentVariable("SEARCH_RESULT_WIDTH")), Environment.GetEnvironmentVariable("SEARCH_RESULT_CONTAINER_NAME"));
+                var width = Convert.ToInt32(Environment.GetEnvironmentVariable("SEARCH_RESULT_WIDTH"));
+                var containerName = Environment.GetEnvironmentVariable("SEARCH_RESULT_CONTAINER_NAME");
+
+                var functions = new Functions(width, containerName);
 
                 await functions.ResizeImage(eventGridEvent, input, log);
             }
             catch (Exception ex)
             {
-                log.LogInformation(ex.Message);
+                log.LogError(ex.Message);
                 throw;
             }
 }
